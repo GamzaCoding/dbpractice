@@ -73,21 +73,32 @@
                     <tr>
                         <th style="text-align:left; padding:10px; border-bottom:1px solid #eee;">ID</th>
                         <th style="text-align:left; padding:10px; border-bottom:1px solid #eee;">상품명(product_name)</th>
-                        <!-- 필요 시 컬럼 추가 -->
-                        <!-- <th style="text-align:left; padding:10px; border-bottom:1px solid #eee;">가격</th> -->
+                        <th style="text-align:left; padding:10px; border-bottom:1px solid #eee;">상품조사일(survey_date)</th>
+                        <th style="text-align:left; padding:10px; border-bottom:1px solid #eee;">가격(product_price)</th>
+                        <th style="text-align:left; padding:10px; border-bottom:1px solid #eee;">판매장소(store_name)</th>
+                        <th style="text-align:left; padding:10px; border-bottom:1px solid #eee;">세일여부(is_sale)</th>
                     </tr>
                     </thead>
+
                     <tbody>
                     <tr th:each="p : ${products}">
                         <td style="padding:10px; border-bottom:1px solid #f3f3f3;" th:text="${p.id}">1</td>
-
-                        <!--
-                          엔티티 필드가 productName인 경우: ${p.productName}
-                          만약 엔티티 필드명이 product_name처럼 되어있다면 그에 맞게 수정
-                        -->
                         <td style="padding:10px; border-bottom:1px solid #f3f3f3;" th:text="${p.productName}">상품명</td>
 
-                        <!-- <td style="padding:10px; border-bottom:1px solid #f3f3f3;" th:text="${p.price}">0</td> -->
+                        <!-- 날짜: 기본 출력(YYYY-MM-DD). 원하면 아래 주석 버전으로 포맷 가능 -->
+                        <td style="padding:10px; border-bottom:1px solid #f3f3f3;" th:text="${p.surveyDate}">2026-02-16</td>
+                        <!-- <td style="padding:10px; border-bottom:1px solid #f3f3f3;" th:text="${#temporals.format(p.surveyDate, 'yyyy-MM-dd')}"></td> -->
+
+                        <!-- 가격: 기본 출력. 원하면 아래 주석 버전으로 포맷 가능 -->
+                        <td style="padding:10px; border-bottom:1px solid #f3f3f3;" th:text="${p.productPrice}">1000.00</td>
+                        <!-- <td style="padding:10px; border-bottom:1px solid #f3f3f3;" th:text="${#numbers.formatDecimal(p.productPrice, 1, 2)}"></td> -->
+
+                        <td style="padding:10px; border-bottom:1px solid #f3f3f3;" th:text="${p.storeName}">판매장소</td>
+
+                        <!-- 세일여부: Boolean null 가능성도 고려 -->
+                        <td style="padding:10px; border-bottom:1px solid #f3f3f3;"
+                            th:text="${p.sale == null ? '-' : (p.sale ? 'Y' : 'N')}">-</td>
+                        <!-- 만약 p.sale이 아니라 p.isSale로 접근해야 하면 위 줄의 p.sale을 p.isSale로 바꿔주세요 -->
                     </tr>
                     </tbody>
                 </table>

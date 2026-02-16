@@ -35,15 +35,15 @@ public class Product {
     private String maker;
 
     @Column(name = "is_sale")
-    private Boolean isSale;
+    private Boolean sale;
 
     @Column(name = "is_one_plus_one")
-    private Boolean isOnePlusOne;
+    private Boolean onePlusOne;
 
-    public Product(boolean isOnePlusOne, boolean isSale, String maker, String storeName, BigDecimal productPrice,
+    public Product(boolean onePlusOne, boolean sale, String maker, String storeName, BigDecimal productPrice,
                    LocalDate surveyDate, String productName) {
-        this.isOnePlusOne = isOnePlusOne;
-        this.isSale = isSale;
+        this.onePlusOne = onePlusOne;
+        this.sale = sale;
         this.maker = maker;
         this.storeName = storeName;
         this.productPrice = productPrice;
