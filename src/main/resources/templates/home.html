@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>dbpractice | Home</title>
+    <link rel="stylesheet" th:href="@{/css/home.css}">
+</head>
+<body>
+<div class="container">
+    <div class="card" id="card">
+        <header>
+            <div>
+                <h1>
+                    <a th:href="@{/home}" style="text-decoration:none; color:inherit;">dbpractice</a>
+                </h1>
+                <div class="muted">product_name로 상품 검색하기</div>
+            </div>
+            <div class="actions">
+                <a class="btn" th:href="@{/posts}">전체 상품 목록</a>
+            </div>
+        </header>
+
+        <!-- 에러 메시지(선택) -->
+        <div class="error" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+        <!-- 검색 폼 -->
+        <section class="panel">
+            <h2 class="h2">상품명 검색</h2>
+
+            <form th:action="@{/home}" method="get">
+                <label for="productName">product_name</label>
+                <input id="productName"
+                       name="productName"
+                       type="text"
+                       placeholder="예) 아이폰, 맥북 등"
+                       th:value="${productName} ?: ''" />
+
+                <div class="row">
+                    <button class="primary" type="submit">검색</button>
+                    <a class="btn" th:href="@{/home}">초기화</a>
+                </div>
+            </form>
+
+            <div class="muted" style="margin-top:10px;">
+                * 정확히 같은 이름(=)으로 조회하는 방식 기준. (부분검색 like는 서비스 로직에서 변경 가능)
+            </div>
+        </section>
+
+        <!-- 검색 결과 영역: productName이 있을 때만 노출 -->
+        <section class="panel" th:if="${productName != null and !#strings.isEmpty(productName)}">
+            <div class="row" style="justify-content:space-between; align-items:center;">
+                <h2 class="h2" style="margin:0;">
+                    검색 결과
+                    <span class="muted" style="font-size:14px;"
+                          th:text="'(검색어: ' + ${productName} + ')'"></span>
+                </h2>
+
+                <div class="muted"
+                     th:if="${products != null}"
+                     th:text="'총 ' + ${#lists.size(products)} + '건'"></div>
+            </div>
+
+            <!-- 결과가 없을 때 -->
+            <div class="muted" th:if="${products == null or #lists.isEmpty(products)}" style="margin-top:10px;">
+                일치하는 상품이 없습니다.
+            </div>
+
+            <!-- 결과 테이블 -->
+            <div th:if="${products != null and !#lists.isEmpty(products)}" style="margin-top:10px; overflow:auto;">
+                <table style="width:100%; border-collapse:collapse;">
+                    <thead>
+                    <tr>
+                        <th style="text-align:left; padding:10px; border-bottom:1px solid #eee;">ID</th>
+                        <th style="text-align:left; padding:10px; border-bottom:1px solid #eee;">상품명(product_name)</th>
+                        <!-- 필요 시 컬럼 추가 -->
+                        <!-- <th style="text-align:left; padding:10px; border-bottom:1px solid #eee;">가격</th> -->
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="p : ${products}">
+                        <td style="padding:10px; border-bottom:1px solid #f3f3f3;" th:text="${p.id}">1</td>
+
+                        <!--
+                          엔티티 필드가 productName인 경우: ${p.productName}
+                          만약 엔티티 필드명이 product_name처럼 되어있다면 그에 맞게 수정
+                        -->
+                        <td style="padding:10px; border-bottom:1px solid #f3f3f3;" th:text="${p.productName}">상품명</td>
+
+                        <!-- <td style="padding:10px; border-bottom:1px solid #f3f3f3;" th:text="${p.price}">0</td> -->
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </div>
+</div>
+</body>
+</html>
