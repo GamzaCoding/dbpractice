@@ -21,3 +21,7 @@ spring:
   sql:
     init:
       mode: always
+
+app:
+  import:
+    dir: /Users/choihyeongseok/Desktop/bigData/product

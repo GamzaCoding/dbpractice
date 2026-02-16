@@ -1,15 +1,21 @@
 package com.choi.dbpractice;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
@@ -25,6 +31,9 @@ public class CsvToH2Importer implements ApplicationRunner {
     private final JdbcTemplate jdbcTemplate;
     private final ResourceLoader resourceLoader;
 
+    @Value("${app.import.dir}")
+    private String importDir;
+
     public CsvToH2Importer(JdbcTemplate jdbcTemplate, ResourceLoader resourceLoader) {
         this.jdbcTemplate = jdbcTemplate;
         this.resourceLoader = resourceLoader;
@@ -32,21 +41,33 @@ public class CsvToH2Importer implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        Resource csv = resourceLoader.getResource(
-                "file:" + "/Users/choihyeongseok/Desktop/bigData/한국소비자원_생필품 가격 정보_20260130.CSV");
+
+        Path dir = Paths.get(importDir);
+        if (!Files.isDirectory(dir)) {
+            throw new IllegalArgumentException("디렉토리가 없습니다. : " + dir);
+        }
 
         String sql = """
                 INSERT INTO product
                 (product_name, survey_date, product_price, store_name, maker, is_sale, is_one_plus_one)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
                 """;
-
         int batchSize = 2000;
-        List<Object[]> batch = new ArrayList<>(batchSize);
         Charset csvCharset = Charset.forName("MS949");
 
+        try (DirectoryStream<Path> pathStream = Files.newDirectoryStream(dir, "*.{csv,CSV}")) {
+            for (Path file : pathStream) {
+                importOneFile(file, csvCharset, sql, batchSize);
+            }
+        }
+    }
+
+    private void importOneFile(Path file, Charset csvCharset, String sql, int batchSize) throws IOException {
+        Resource csv = resourceLoader.getResource("file:" + file.toAbsolutePath());
+        List<Object[]> batch = new ArrayList<>(batchSize);
+
         try (BufferedReader br = new BufferedReader(new InputStreamReader(csv.getInputStream(), csvCharset));
-           CSVParser parser = CSVFormat.DEFAULT.builder()
+             CSVParser parser = CSVFormat.DEFAULT.builder()
                    .setHeader()
                    .setSkipHeaderRecord(true)
                    .setIgnoreSurroundingSpaces(true)
