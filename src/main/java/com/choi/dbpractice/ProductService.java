@@ -12,7 +12,6 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-
     public List<Product> searchByProductName(String productName) {
         return productRepository.findByProductNameContaining(productName);
     }

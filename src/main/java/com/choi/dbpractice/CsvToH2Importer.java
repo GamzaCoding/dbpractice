@@ -28,6 +28,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class CsvToH2Importer implements ApplicationRunner {
 
+    private static final String INSERT_PRODUCT_SQL = """
+            INSERT INTO product
+            (product_name, survey_date, product_price, store_name, maker, is_sale, is_one_plus_one)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """;
+    private static final Charset CSV_CHARSET = Charset.forName("MS949");
+    private static final int BATCHSIZE = 2000;
+
     private final JdbcTemplate jdbcTemplate;
     private final ResourceLoader resourceLoader;
 
@@ -43,28 +51,24 @@ public class CsvToH2Importer implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
 
         Path dir = Paths.get(importDir);
-        if (!Files.isDirectory(dir)) {
-            throw new IllegalArgumentException("디렉토리가 없습니다. : " + dir);
-        }
-
-        String sql = """
-                INSERT INTO product
-                (product_name, survey_date, product_price, store_name, maker, is_sale, is_one_plus_one)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-                """;
-        int batchSize = 2000;
-        Charset csvCharset = Charset.forName("MS949");
+        validateIsExistPath(dir);
 
         try (DirectoryStream<Path> pathStream = Files.newDirectoryStream(dir, "*.{csv,CSV}")) {
             for (Path file : pathStream) {
-                importOneFile(file, csvCharset, sql, batchSize);
+                importOneFile(file, CSV_CHARSET, INSERT_PRODUCT_SQL);
             }
         }
     }
 
-    private void importOneFile(Path file, Charset csvCharset, String sql, int batchSize) throws IOException {
+    private static void validateIsExistPath(Path dir) {
+        if (!Files.isDirectory(dir)) {
+            throw new IllegalArgumentException("디렉토리가 없습니다. : " + dir);
+        }
+    }
+
+    private void importOneFile(Path file, Charset csvCharset, String sql) throws IOException {
         Resource csv = resourceLoader.getResource("file:" + file.toAbsolutePath());
-        List<Object[]> batch = new ArrayList<>(batchSize);
+        List<Object[]> batch = new ArrayList<>(BATCHSIZE);
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(csv.getInputStream(), csvCharset));
              CSVParser parser = CSVFormat.DEFAULT.builder()
@@ -89,7 +93,7 @@ public class CsvToH2Importer implements ApplicationRunner {
 
                 batch.add(new Object[]{productName, surveyDate, productPrice, storeName, maker, isSale, isOnePlusOne});
 
-                if (batch.size() == batchSize) {
+                if (batch.size() == BATCHSIZE) {
                     jdbcTemplate.batchUpdate(sql, batch);
                     batch.clear();
                 }
