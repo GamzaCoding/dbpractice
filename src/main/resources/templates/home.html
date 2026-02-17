@@ -12,7 +12,7 @@
         <header>
             <div>
                 <h1>
-                    <a th:href="@{/home}" style="text-decoration:none; color:inherit;">생필품 가격 정보</a>
+                    <a th:href="@{/}" style="text-decoration:none; color:inherit;">생필품 가격 정보</a>
                 </h1>
                 <div class="muted"></div>
             </div>
@@ -28,7 +28,7 @@
         <section class="panel">
             <h2 class="h2">상품명 검색</h2>
 
-            <form th:action="@{/home}" method="get">
+            <form th:action="@{/}" method="get">
                 <label for="productName"></label>
                 <input id="productName"
                        name="productName"
@@ -38,7 +38,7 @@
 
                 <div class="row">
                     <button class="primary" type="submit">검색</button>
-                    <a class="btn" th:href="@{/home}">초기화</a>
+                    <a class="btn" th:href="@{/}">초기화</a>
                 </div>
             </form>
 
