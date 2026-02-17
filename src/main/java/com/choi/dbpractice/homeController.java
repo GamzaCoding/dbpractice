@@ -22,7 +22,7 @@ public class homeController {
         model.addAttribute("productName", productName);
 
         if (productName != null && !productName.isBlank()) {
-            List<Product> products = productService.findByProductName(productName);
+            List<Product> products = productService.searchByProductName(productName);
             model.addAttribute("products", products);
         }
         return "home";

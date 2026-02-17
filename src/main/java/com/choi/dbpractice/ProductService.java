@@ -13,7 +13,7 @@ public class ProductService {
     }
 
 
-    public List<Product> findByProductName(String productName) {
-        return productRepository.findByProductName(productName);
+    public List<Product> searchByProductName(String productName) {
+        return productRepository.findByProductNameContaining(productName);
     }
 }
