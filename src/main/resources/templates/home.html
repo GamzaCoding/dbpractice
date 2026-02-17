@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>dbpractice | Home</title>
+    <title>생필품 가격 정보 조회 서비스 | Home</title>
     <link rel="stylesheet" th:href="@{/css/home.css}">
 </head>
 <body>
@@ -12,9 +12,9 @@
         <header>
             <div>
                 <h1>
-                    <a th:href="@{/home}" style="text-decoration:none; color:inherit;">dbpractice</a>
+                    <a th:href="@{/home}" style="text-decoration:none; color:inherit;">생필품 가격 정보</a>
                 </h1>
-                <div class="muted">product_name로 상품 검색하기</div>
+                <div class="muted"></div>
             </div>
             <div class="actions">
                 <a class="btn" th:href="@{/posts}">전체 상품 목록</a>
@@ -29,7 +29,7 @@
             <h2 class="h2">상품명 검색</h2>
 
             <form th:action="@{/home}" method="get">
-                <label for="productName">product_name</label>
+                <label for="productName"></label>
                 <input id="productName"
                        name="productName"
                        type="text"
